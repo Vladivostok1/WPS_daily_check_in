@@ -1,8 +1,6 @@
-invite_userids = [244668941]
-
 import json, os, time
 import requests
-
+import notify
 
 sids = [
     "V02StVuaNcoKrZ3BuvJQ1FcFS_xnG2k00af250d4002664c02f",
@@ -26,23 +24,23 @@ def request_re(sid, invite_userid, rep = 30):
     js = json.loads(r.content)
     if js['msg'] == 'tryLater' and rep > 0:
         rep -= 1
-        time.sleep(2)
+        time.sleep(3)
         r = request_re(sid, invite_userid, rep)
     return r
-
-for i in invite_userids:
-    for j in sids:
-        r = request_re(j, i)
-        js = json.loads(r.content)
-        if js['result'] == 'ok':
-            mk += 1
+    
+invite_userid = os.getenv('USER_ID')
+for i in sids:
+    r = request_re(i, invite_userid)
+    js = json.loads(r.content)
+    if js['result'] == 'ok':
+        mk += 1
             
 print('成功邀请%d位好友'%(mk))   
 
-SERVER_KEY = os.getenv('SERVER_KEY')
-if SERVER_KEY:
+PUSH_KEY = os.getenv('PUSH_KEY')
+if PUSH_KEY:
     data = {
         'text':'WPS邀请好友任务：成功邀请到%d位好友'%(mk),
         'desp':'成功邀请%d位好友'%(mk)
     }
-    requests.post('https://sc.ftqq.com/%s.send'%(SERVER_KEY.strip()), data = data)
+    notify.post_push(PUSH_KEY,data['desp'],data['text'])

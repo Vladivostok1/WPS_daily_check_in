@@ -2,10 +2,10 @@ name: 'WPS daily check in'
 
 on:
   push:
-    branches: 
+    branches:
       - main
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '0 0 * * *'
 
 jobs:
   daily_check_in:
@@ -21,9 +21,10 @@ jobs:
         run: pip install -r ./requirements.txt
       - name: 'Working-invite'
         env:
-          SERVER_KEY: ${{secrets.SERVER_KEY}}
+          PUSH_KEY: ${{secrets.PUSH_KEY}}
+          USER_ID: ${{secrets.USER_ID}}
         run: python WPS_accept_invitation.py
 #       - name: 'Working-signin'
-#         env: 
+#         env:
 #            WPS_SID: ${{secrets.WPS_SID}}
 #         run: python WPS_sign_in.py
